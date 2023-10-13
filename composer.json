@@ -1,0 +1,17 @@
+{
+    "name": "reborn/laravel-speech",
+    "autoload": {
+        "psr-4": {
+            "Reborn\\LaravelSpeech\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "yejingyong",
+            "email": "1395518942@qq.com"
+        }
+    ],
+    "require": {
+        "php": "^8.0"
+    }
+}
