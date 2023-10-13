@@ -11,17 +11,17 @@
 
 1、创建config/speech.php 配置文件
 
-   <?php
-
-    return   [
-        'API_KEY'    => '',
-        'SECRET_KEY' => '',
-    ];
+       <?php
+    
+        return   [
+            'API_KEY'    => '',
+            'SECRET_KEY' => '',
+        ];
 
 
 
 2、在config/app目录加载插件
-
+    
         'providers' => [
             Yreborn\LaravelSpeech\SpeechServiceProvider::class
         ],
