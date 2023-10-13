@@ -9,27 +9,13 @@
     2、在composer.json 新增 "yreborn/laravel-speech": "dev-main"，在命令行使用composer install进行安装
 
 
-1、创建config/upload.php 配置文件
+1、创建config/speech.php 配置文件
 
-    <?php
-    
+   <?php
+
     return   [
-        'ali_access_key_id'     => '密钥id',
-        'ali_access_key_secret' => '密钥',
-        'ali_endpoint'          => '区域域名',
-        'ali_bucket'            => 'bucket列表',
-        'ali_http'              => '访问域名',
-    
-        'qn_access_key'         => '密钥id',
-        'qn_secret_key'         => '密钥',
-        'qn_bucket'             => 'bucket列表',
-        'qn_http'               => '访问域名1',
-    
-        'tx_secret_id'          => '密钥id',
-        'tx_secret_key'         => '密钥',
-        'tx_region'             => '区域',
-        'tx_bucket'             => 'bucket列表',
-        'tx_http'               => '访问域名'
+        'API_KEY'    => '',
+        'SECRET_KEY' => '',
     ];
 
 
@@ -37,10 +23,10 @@
 2、在config/app目录加载插件
 
         'providers' => [
-            Yreborn\LaravelUpload\UploadServiceProvider::class
+            Yreborn\LaravelSpeech\SpeechServiceProvider::class
         ],
         'aliases' => [
-            'Upload' => Yreborn\LaravelUpload\Facades\Upload::class
+            'Speech' => Yreborn\LaravelSpeech\Facades\Speech::class
         ],
 
 
@@ -64,11 +50,54 @@
         
             public function index(Request $request)
             {
-                $oss_path = $request->file('file')->store('file');
-                $local_path = Storage::path($oss_path);
-                $res = Upload::aliUpload($local_path,$oss_path);
-                return $res;
+                //tex:文本  cuid:唯一标识 lang:中文 task_ids:任务id
+                $short = ['tex' => '现在的时间是20231013','cuid' => '2iQCcRhICQ2KUeAS46oK31EJNkau52Oz'];
+                $long = ['text' => '现在的时间是20231013','lang' => 'zh'];
+                $query = ['task_ids' => ['6528a1e31134240001d39fff']];
+                $data = Speech::query($query); //长文本查询
+                $data = Speech::short($short); //短文本生成
+                $data = Speech::long($long); //长文本生成
+                if(!is_array($data)){
+                    file_put_contents('audio.mp3', $data);
+                    return view('video', ['view' => 'audio.mp3']);
+                }
             }
         }
+
+
+
+4、html页面播放
+        
+    ```php
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,minimal-ui">
+        <meta name="referrer" content="no-referrer">
+        <title>xgplayer</title>
+        <style type="text/css">
+            html, body {width:100%;height:100%;margin:auto;overflow: hidden;}
+        </style>
+    </head>
+    <body>
+    <div id="mse"></div>
+    <link rel="stylesheet" href="https://unpkg.byted-static.com/xgplayer/3.0.1/dist/index.min.css"/>
+    <script charset="utf-8" src="https://unpkg.byted-static.com/xgplayer/3.0.1/dist/index.min.js"></script>
+    
+    <script>
+        const config = {
+            "id": "mse",
+            "url": "{{asset($view)}}",
+            "playsinline": true,
+            "poster": "//lf9-cdn-tos.bytecdntp.com/cdn/expire-1-M/byted-player-videos/1.0.0/poster.jpg",
+            "plugins": []
+        }
+    
+        let player = new Player(config)
+    
+    </script>  </body>
+    </html>
+        ```
 
         
